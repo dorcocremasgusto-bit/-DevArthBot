@@ -5,8 +5,12 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "node test.js",
-    "start": "node index.js"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "bot": "node index.js",
+    "server": "node server/pairing-server.js"
   },
   "keywords": [
     "whatsapp",
@@ -17,16 +21,28 @@
     "crew"
   ],
   "dependencies": {
-    "baileys": "npm:baileys@latest",
     "axios": "^1.7.7",
     "axios-retry": "^3.9.1",
-    "uuid": "^9.0.1",
-    "wa-sticker-formatter": "^4.4.4",
-    "pino": "^8.18.0",
+    "baileys": "npm:baileys@latest",
+    "cors": "^2.8.6",
     "crypto": "latest",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
     "file-type": "^19.0.0",
-    "form-data": "^4.0.1"
+    "form-data": "^4.0.1",
+    "next": "^16.3.4",
+    "pino": "^8.18.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "uuid": "^9.0.1",
+    "wa-sticker-formatter": "^4.4.4"
   },
   "author": "𓆩 𝐊𝐋𝐀𝐔𝐒 𝐃𝐄𝐕 (𝐀𝐫𝐭𝐡𝐮𝐫 𝐃𝐞𝐯) 𓆪",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/react": "19.2.18",
+    "tailwindcss": "^4.3.3",
+    "typescript": "7.0.2"
+  }
 }
