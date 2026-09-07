@@ -5,7 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently -k -n web,bot -c cyan,green \"next dev\" \"node server/pairing-server.js\"",
+    "dev:web": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
@@ -42,6 +43,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
     "@types/react": "19.2.18",
+    "concurrently": "^10.0.5",
     "tailwindcss": "^4.3.3",
     "typescript": "7.0.2"
   }

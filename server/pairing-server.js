@@ -77,6 +77,10 @@ app.get('/', (_req, res) => {
   res.json({ name: 'DevArth-Bot pairing server', status: 'ok' })
 })
 
+app.get('/health', (_req, res) => {
+  res.json({ status: 'ok', uptime: process.uptime() })
+})
+
 app.post('/api/pairing', async (req, res) => {
   const normalized = normalizePhone(req.body?.phoneNumber ?? '')
   if (!normalized.ok) return res.status(400).json({ error: normalized.error })
