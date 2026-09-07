@@ -87,11 +87,16 @@ const server = http.createServer(async (req, res) => {
 
   // --- Real connection status straight from the live Baileys socket ---
   if (req.method === 'GET' && pathname === '/api/status') {
-    const session = getSession(searchParams.get('number'))
-    if (!session) {
-      return sendJson(res, 404, { ok: false, error: 'Aucune session pour ce numéro.' })
+    try {
+      const session = await getSession(searchParams.get('number'))
+      if (!session) {
+        return sendJson(res, 404, { ok: false, error: 'Aucune session pour ce numéro.' })
+      }
+      return sendJson(res, 200, { ok: true, ...session })
+    } catch (e) {
+      console.error('[v0] /api/status failed:', e?.message)
+      return sendJson(res, 400, { ok: false, error: e?.message || 'Erreur inconnue du backend.' })
     }
-    return sendJson(res, 200, { ok: true, ...session })
   }
 
   if (req.method === 'GET' && pathname === '/api/health') {
