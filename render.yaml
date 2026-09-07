@@ -1,0 +1,26 @@
+# Render.com deployment for the DevArth-Bot pairing backend.
+# 1. Push this repo to GitHub.
+# 2. On Render: New > Blueprint, point it at this repo.
+# 3. Fill in the env vars below, then copy the service URL into
+#    your Vercel project's BOT_BACKEND_URL.
+services:
+  - type: web
+    name: devarth-bot-backend
+    runtime: node
+    plan: starter # a paid plan keeps the process always-on (needed for Baileys)
+    buildCommand: npm install --omit=dev --no-audit --no-fund
+    startCommand: node server/pairing-server.js
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: BOT_API_KEY
+        sync: false # set the same value in Vercel's BOT_API_KEY
+      - key: CORS_ORIGIN
+        sync: false # your Vercel app URL, e.g. https://your-app.vercel.app
+      - key: NODE_ENV
+        value: production
+    disk:
+      name: session
+      mountPath: /app/session # persists Baileys auth state across restarts
+      sizeGB: 1

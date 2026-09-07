@@ -1,0 +1,32 @@
+# Fly.io deployment for the DevArth-Bot pairing backend.
+# 1. Install flyctl and run `fly launch --no-deploy` (it reads this file).
+# 2. Set secrets: `fly secrets set BOT_API_KEY=... CORS_ORIGIN=https://your-app.vercel.app`
+# 3. Deploy: `fly deploy`, then put the app URL in Vercel's BOT_BACKEND_URL.
+app = "devarth-bot-backend"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  NODE_ENV = "production"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # Keep at least one machine running — Baileys needs a persistent socket.
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    method = "GET"
+    path = "/health"
+    interval = "30s"
+    timeout = "5s"
+
+# Persist Baileys auth/session state across restarts.
+[mounts]
+  source = "session"
+  destination = "/app/session"
