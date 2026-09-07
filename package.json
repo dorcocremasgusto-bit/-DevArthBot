@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "node test.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "web": "node server.js",
+    "dev": "node server.js"
   },
   "keywords": [
     "whatsapp",
@@ -23,7 +25,6 @@
     "uuid": "^9.0.1",
     "wa-sticker-formatter": "^4.4.4",
     "pino": "^8.18.0",
-    "crypto": "latest",
     "file-type": "^19.0.0",
     "form-data": "^4.0.1"
   },

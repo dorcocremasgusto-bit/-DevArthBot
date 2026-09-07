@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0a0012" />
+    <meta
+      name="description"
+      content="DevArth-Bot — Génère ton vrai code de pairing WhatsApp instantanément."
+    />
+    <title>DevArth-Bot · Pairing WhatsApp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-glow bg-glow--1" aria-hidden="true"></div>
+    <div class="bg-glow bg-glow--2" aria-hidden="true"></div>
+
+    <main class="shell">
+      <section class="card" aria-labelledby="title">
+        <header class="card__head">
+          <div class="brand">
+            <span class="brand__dot" aria-hidden="true"></span>
+            <span class="brand__name">DevArth-Bot</span>
+          </div>
+          <h1 id="title" class="title">Pairing WhatsApp</h1>
+          <p class="subtitle">
+            Entre ton numéro pour recevoir ton vrai code de connexion généré par WhatsApp.
+          </p>
+        </header>
+
+        <form id="pair-form" class="form" novalidate>
+          <label class="field" for="number">
+            <span class="field__label">Numéro WhatsApp</span>
+            <div class="field__control">
+              <span class="field__prefix">+</span>
+              <input
+                id="number"
+                name="number"
+                type="tel"
+                inputmode="numeric"
+                autocomplete="tel"
+                placeholder="243 812 345 678"
+                aria-describedby="hint"
+                required
+              />
+            </div>
+            <span id="hint" class="field__hint">Avec l’indicatif pays, sans le « + ».</span>
+          </label>
+
+          <button id="submit" class="btn" type="submit">
+            <span class="btn__label">GET CODE PAIRING</span>
+            <span class="btn__spinner" aria-hidden="true"></span>
+          </button>
+        </form>
+
+        <div
+          id="result"
+          class="result"
+          hidden
+          role="status"
+          aria-live="polite"
+        >
+          <span class="result__label">Ton code de pairing</span>
+          <div id="code" class="result__code" aria-label="Code de pairing"></div>
+          <p class="result__how">
+            WhatsApp → <strong>Appareils connectés</strong> →
+            <strong>Associer un appareil</strong> →
+            <strong>Associer avec un numéro</strong>, puis saisis ce code.
+          </p>
+        </div>
+
+        <div id="statusRow" class="status" hidden aria-live="polite">
+          <span class="status__pill" id="statusPill">
+            <span class="status__ring" aria-hidden="true"></span>
+            <span id="statusText">En attente…</span>
+          </span>
+        </div>
+
+        <p id="error" class="error" role="alert" hidden></p>
+      </section>
+
+      <footer class="foot">
+        <span>Sessions &amp; credentials restent côté serveur.</span>
+      </footer>
+    </main>
+
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>
