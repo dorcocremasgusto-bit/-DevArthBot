@@ -17,9 +17,6 @@ importers:
       baileys:
         specifier: npm:baileys@latest
         version: 7.0.0-rc14(sharp@0.30.7)
-      crypto:
-        specifier: latest
-        version: 1.0.1
       file-type:
         specifier: ^19.0.0
         version: 19.6.0
@@ -202,10 +199,6 @@ packages:
   content-type@2.1.0:
     resolution: {integrity: sha512-mj7UPXE0jaqaOsukNZRUEfEi2AcL7C/vwmwcHV0O97eO1E1pxBZuyjlZrx5seTaNBg1U6+o35wpa35Qfcc+7ag==}
     engines: {node: '>=18'}
-
-  crypto@1.0.1:
-    resolution: {integrity: sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig==}
-    deprecated: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
 
   curve25519-js@0.0.4:
     resolution: {integrity: sha512-axn2UMEnkhyDUPWOwVKBMVIzSQy2ejH2xRGy1wq81dqRwApXfIzfbE3hIX0ZRFBIihf/KDqK158DLwESu4AK1w==}
@@ -872,8 +865,6 @@ snapshots:
       delayed-stream: 1.0.0
 
   content-type@2.1.0: {}
-
-  crypto@1.0.1: {}
 
   curve25519-js@0.0.4: {}
 
