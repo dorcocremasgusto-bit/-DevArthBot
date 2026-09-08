@@ -7,13 +7,21 @@ const statusRow = document.getElementById("statusRow")
 const statusText = document.getElementById("statusText")
 const errorEl = document.getElementById("error")
 
+const BACKEND_URL = "https://devarth-bot-backend.onrender.com"
+
 let pollTimer = null
 let currentNumber = null
 
 function setLoading(loading) {
   button.disabled = loading
   button.classList.toggle("is-loading", loading)
-  button.querySelector(".btn__label").textContent = loading ? "GÉNÉRATION…" : "GET CODE PAIRING"
+
+  const label = button.querySelector(".btn__label")
+  if (label) {
+    label.textContent = loading
+      ? "GÉNÉRATION…"
+      : "GET CODE PAIRING"
+  }
 }
 
 function showError(message) {
@@ -29,6 +37,7 @@ function clearError() {
 function renderStatus(status) {
   statusRow.hidden = false
   statusRow.classList.remove("is-connected", "is-failed")
+
   if (status === "connected") {
     statusRow.classList.add("is-connected")
     statusText.textContent = "Connecté à WhatsApp"
@@ -47,23 +56,27 @@ function stopPolling() {
   }
 }
 
-// Poll the REAL backend for live connection status.
 async function pollStatus() {
   if (!currentNumber) return
+
   try {
-    const res = await fetch(`/api/status?number=${encodeURIComponent(currentNumber)}`)
+    const res = await fetch(
+      `${BACKEND_URL}/api/status`
+    )
+
     if (!res.ok) return
+
     const data = await res.json()
-    if (!data.ok) return
+
+    if (!data.success) return
+
     renderStatus(data.status)
+
     if (data.status === "connected") {
       stopPolling()
-    } else if (data.status === "failed") {
-      stopPolling()
-      if (data.error) showError(data.error)
     }
   } catch {
-    // transient network error, keep polling
+    // Erreur réseau temporaire : continuer le polling
   }
 }
 
@@ -72,41 +85,62 @@ form.addEventListener("submit", async (event) => {
   clearError()
 
   const raw = input.value.replace(/[^0-9]/g, "")
+
   if (raw.length < 8) {
-    showError("Entre un numéro valide avec l’indicatif pays (ex: 243812345678).")
+    showError(
+      "Entre un numéro valide avec l’indicatif pays (ex: 509XXXXXXXX)."
+    )
     return
   }
 
   stopPolling()
+
   resultBox.hidden = true
   statusRow.hidden = true
+
   setLoading(true)
 
   try {
-    const res = await fetch("/api/pair", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ number: raw }),
-    })
+    const res = await fetch(
+      `${BACKEND_URL}/api/pairing`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          phoneNumber: raw
+        })
+      }
+    )
+
     const data = await res.json()
 
-    if (!res.ok || !data.ok) {
-      throw new Error(data.error || "Le backend n’a pas pu générer le code.")
+    if (!res.ok || !data.success) {
+      throw new Error(
+        data.error ||
+        "Le backend n’a pas pu générer le code."
+      )
     }
 
-    currentNumber = data.number
+    currentNumber = raw
 
-    if (data.code) {
-      codeEl.textContent = data.code
+    if (data.pairingCode) {
+      codeEl.textContent = data.pairingCode
       resultBox.hidden = false
     }
 
-    renderStatus(data.status)
+    renderStatus("connecting")
 
-    // Start live polling of the real WhatsApp socket status.
     pollTimer = setInterval(pollStatus, 3000)
+
   } catch (err) {
-    showError(err.message || "Erreur de connexion au backend.")
+    console.error(err)
+
+    showError(
+      err.message ||
+      "Erreur de connexion au backend."
+    )
   } finally {
     setLoading(false)
   }
