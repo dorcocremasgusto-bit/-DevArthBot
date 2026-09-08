@@ -50,13 +50,16 @@ async function connectToWhatsapp(handleMessage, customNumber = null, onCode = nu
 
 
             if (shouldReconnect) {
+    console.log('🔄 Reconnecting in 5 seconds...');
 
-                console.log('🔄 Reconnecting in 5 seconds...');
-
-                setTimeout(() => {
-                    connectToWhatsapp(handleMessage, customNumber);
-                }, 5000);
-
+    setTimeout(() => {
+        connectToWhatsapp(
+            handleMessage,
+            customNumber,
+            onCode
+        );
+    }, 5000);
+}
             } else {
 
                 console.log(
@@ -90,7 +93,7 @@ async function connectToWhatsapp(handleMessage, customNumber = null, onCode = nu
  DevArth Mini Bot Connected 🚀
 ╚══════════════════╝
 
-Digital Crew 243
+DevArth Bot 
                 `;
 
 
@@ -170,17 +173,20 @@ Digital Crew 243
                 );
 
 
-                const code =
-                    await sock.requestPairingCode(
-                        number,
-                        'DEVKLAUS'
-                    );
+                const code = await sock.requestPairingCode(
+    number,
+    'DEVKLAUS'
+);
+
+console.log(
+    '📲 Pairing Code:',
+    code
+);
 
 
-                console.log(
-                    '📲 Pairing Code:',
-                    code
-                );
+if (onCode) {
+    onCode(code);
+}
 
 
                 setTimeout(() => {
