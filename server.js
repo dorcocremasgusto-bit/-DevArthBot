@@ -22,26 +22,49 @@ app.get("/pair", async (req, res) => {
 
     try {
 
-        console.log(
-            "📲 New pairing request:",
-            number
-        );
+        let pairingCode = null;
 
 
-        const sock = await connectToWhatsapp(
+        await connectToWhatsapp(
             async () => {},
-            number
+            number,
+            (code) => {
+                pairingCode = code;
+            }
         );
+
+
+        // tann jiskaske code la disponib
+        let count = 0;
+
+        while (!pairingCode && count < 30) {
+
+            await new Promise(resolve =>
+                setTimeout(resolve, 1000)
+            );
+
+            count++;
+
+        }
+
+
+        if (!pairingCode) {
+
+            return res.json({
+                success: false,
+                error: "Pa jwenn pairing code"
+            });
+
+        }
 
 
         res.json({
 
             success: true,
 
-            message:
-            "Pairing started. Check server terminal for code.",
+            number: number,
 
-            number
+            code: pairingCode
 
         });
 
@@ -56,8 +79,7 @@ app.get("/pair", async (req, res) => {
 
             success: false,
 
-            error:
-            "Pairing failed"
+            error: error.message
 
         });
 
