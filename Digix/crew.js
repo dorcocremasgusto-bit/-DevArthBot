@@ -6,6 +6,7 @@ import configmanager from '../utils/configmanager.js';
 const data = 'sessionData';
 
 async function connectToWhatsapp(handleMessage, customNumber = null, onCode = null) {
+
     const { version } = await fetchLatestBaileysVersion();
     console.log(version);
 
@@ -27,120 +28,124 @@ async function connectToWhatsapp(handleMessage, customNumber = null, onCode = nu
     sock.ev.on('creds.update', saveCreds);
 
 
-sock.ev.on('connection.update', async (update) => {
+    sock.ev.on('connection.update', async (update) => {
 
-    const { connection, lastDisconnect } = update;
-
-
-    if (connection === 'close') {
-
-        const statusCode = lastDisconnect?.error?.output?.statusCode;
-        const reason = lastDisconnect?.error?.toString() || 'unknown';
-
-        console.log(
-            '❌ Disconnected:',
-            reason,
-            'StatusCode:',
-            statusCode
-        );
+        const { connection, lastDisconnect } = update;
 
 
-        const shouldReconnect =
-            statusCode !== DisconnectReason.loggedOut;
+        if (connection === 'close') {
 
+            const statusCode = lastDisconnect?.error?.output?.statusCode;
+            const reason = lastDisconnect?.error?.toString() || 'unknown';
 
-        if (shouldReconnect) {
-
-            console.log('🔄 Reconnecting in 5 seconds...');
-
-            setTimeout(() => {
-
-                connectToWhatsapp(
-                    handleMessage,
-                    customNumber,
-                    onCode
-                );
-
-            }, 5000);
-
-
-        } else {
 
             console.log(
-                '🚫 Logged out permanently.'
+                '❌ Disconnected:',
+                reason,
+                'StatusCode:',
+                statusCode
             );
 
-        }
+
+            const shouldReconnect =
+                statusCode !== DisconnectReason.loggedOut;
 
 
-    } else if (connection === 'connecting') {
+            if (shouldReconnect) {
 
-        console.log('⏳ Connecting...');
-
-
-    } else if (connection === 'open') {
-
-        console.log(
-            '✅ WhatsApp connection established!'
-        );
+                console.log('🔄 Reconnecting in 5 seconds...');
 
 
-        try {
+                setTimeout(() => {
 
-            const chatId = `${customNumber || '50943841601'}@s.whatsapp.net`;
+                    connectToWhatsapp(
+                        handleMessage,
+                        customNumber,
+                        onCode
+                    );
 
-            const imagePath = './database/DigixCo.jpg';
+                }, 5000);
 
 
-            const messageText = `
+            } else {
+
+                console.log(
+                    '🚫 Logged out permanently.'
+                );
+
+            }
+
+
+        } else if (connection === 'connecting') {
+
+            console.log('⏳ Connecting...');
+
+
+        } else if (connection === 'open') {
+
+            console.log(
+                '✅ WhatsApp connection established!'
+            );
+
+
+            try {
+
+                const chatId = `${customNumber || '50943841601'}@s.whatsapp.net`;
+
+                const imagePath = './database/DigixCo.jpg';
+
+
+                const messageText = `
 ╔══════════════════╗
  DevArth Mini Bot Connected 🚀
 ╚══════════════════╝
 
 DevArth Bot
-            `;
+                `;
 
 
-            if (fs.existsSync(imagePath)) {
+                if (fs.existsSync(imagePath)) {
 
-                await sock.sendMessage(chatId, {
-                    image: {
-                        url: imagePath
-                    },
-                    caption: messageText,
-                    footer: '💻 Powered by DigiX Crew',
-                });
+                    await sock.sendMessage(chatId, {
+                        image: {
+                            url: imagePath
+                        },
+                        caption: messageText,
+                        footer: '💻 Powered by DigiX Crew',
+                    });
+
+                }
+
+
+                console.log(
+                    '📩 Welcome message sent!'
+                );
+
+
+            } catch (err) {
+
+                console.log(
+                    'Welcome error:',
+                    err
+                );
 
             }
 
 
-            console.log(
-                '📩 Welcome message sent!'
-            );
-
-
-        } catch (err) {
-
-            console.log(
-                'Welcome error:',
-                err
+            sock.ev.on(
+                'messages.upsert',
+                async (msg) => handleMessage(sock, msg)
             );
 
         }
 
+    });
 
-        sock.ev.on(
-            'messages.upsert',
-            async (msg) => handleMessage(sock, msg)
-        );
 
-    }
 
-});
-
+    setTimeout(async () => {
 
         if (!state.creds.registered) {
-
 
             console.log(
                 '⚠️ Not logged in. Preparing pairing...'
@@ -148,7 +153,6 @@ DevArth Bot
 
 
             try {
-
 
                 const number = customNumber || 50943841601;
 
@@ -174,23 +178,23 @@ DevArth Bot
 
 
                 const code = await sock.requestPairingCode(
-    number,
-    'DEVKLAUS'
-);
-
-console.log(
-    '📲 Pairing Code:',
-    code
-);
+                    number,
+                    'DEVKLAUS'
+                );
 
 
-if (onCode) {
-    onCode(code);
-}
+                console.log(
+                    '📲 Pairing Code:',
+                    code
+                );
+
+
+                if (onCode) {
+                    onCode(code);
+                }
 
 
                 setTimeout(() => {
-
 
                     configmanager.config.users[number] = {
 
@@ -216,7 +220,6 @@ if (onCode) {
 
 
                 }, 2000);
-
 
 
             } catch (e) {
