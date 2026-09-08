@@ -27,116 +27,116 @@ async function connectToWhatsapp(handleMessage, customNumber = null, onCode = nu
     sock.ev.on('creds.update', saveCreds);
 
 
-    sock.ev.on('connection.update', async (update) => {
+sock.ev.on('connection.update', async (update) => {
 
-        const { connection, lastDisconnect } = update;
-
-
-        if (connection === 'close') {
-
-            const statusCode = lastDisconnect?.error?.output?.statusCode;
-            const reason = lastDisconnect?.error?.toString() || 'unknown';
-
-            console.log(
-                '❌ Disconnected:',
-                reason,
-                'StatusCode:',
-                statusCode
-            );
+    const { connection, lastDisconnect } = update;
 
 
-            const shouldReconnect =
-                statusCode !== DisconnectReason.loggedOut;
+    if (connection === 'close') {
 
+        const statusCode = lastDisconnect?.error?.output?.statusCode;
+        const reason = lastDisconnect?.error?.toString() || 'unknown';
 
-            if (shouldReconnect) {
-    console.log('🔄 Reconnecting in 5 seconds...');
-
-    setTimeout(() => {
-        connectToWhatsapp(
-            handleMessage,
-            customNumber,
-            onCode
+        console.log(
+            '❌ Disconnected:',
+            reason,
+            'StatusCode:',
+            statusCode
         );
-    }, 5000);
-}
-            } else {
 
-                console.log(
-                    '🚫 Logged out permanently.'
+
+        const shouldReconnect =
+            statusCode !== DisconnectReason.loggedOut;
+
+
+        if (shouldReconnect) {
+
+            console.log('🔄 Reconnecting in 5 seconds...');
+
+            setTimeout(() => {
+
+                connectToWhatsapp(
+                    handleMessage,
+                    customNumber,
+                    onCode
                 );
 
-            }
+            }, 5000);
 
 
-        } else if (connection === 'connecting') {
-
-            console.log('⏳ Connecting...');
-
-
-        } else if (connection === 'open') {
+        } else {
 
             console.log(
-                '✅ WhatsApp connection established!'
-            );
-
-
-            try {
-
-                const chatId = `${customNumber || '50943841601'}@s.whatsapp.net`;
-
-                const imagePath = './database/DigixCo.jpg';
-
-
-                const messageText = `
-╔══════════════════╗
- DevArth Mini Bot Connected 🚀
-╚══════════════════╝
-
-DevArth Bot 
-                `;
-
-
-                if (fs.existsSync(imagePath)) {
-
-                    await sock.sendMessage(chatId, {
-                        image: {
-                            url: imagePath
-                        },
-                        caption: messageText,
-                        footer: '💻 Powered by DigiX Crew',
-                    });
-
-                }
-
-
-                console.log(
-                    '📩 Welcome message sent!'
-                );
-
-
-            } catch (err) {
-
-                console.log(
-                    'Welcome error:',
-                    err
-                );
-
-            }
-
-
-            sock.ev.on(
-                'messages.upsert',
-                async (msg) => handleMessage(sock, msg)
+                '🚫 Logged out permanently.'
             );
 
         }
 
-    });
+
+    } else if (connection === 'connecting') {
+
+        console.log('⏳ Connecting...');
 
 
+    } else if (connection === 'open') {
 
-    setTimeout(async () => {
+        console.log(
+            '✅ WhatsApp connection established!'
+        );
+
+
+        try {
+
+            const chatId = `${customNumber || '50943841601'}@s.whatsapp.net`;
+
+            const imagePath = './database/DigixCo.jpg';
+
+
+            const messageText = `
+╔══════════════════╗
+ DevArth Mini Bot Connected 🚀
+╚══════════════════╝
+
+DevArth Bot
+            `;
+
+
+            if (fs.existsSync(imagePath)) {
+
+                await sock.sendMessage(chatId, {
+                    image: {
+                        url: imagePath
+                    },
+                    caption: messageText,
+                    footer: '💻 Powered by DigiX Crew',
+                });
+
+            }
+
+
+            console.log(
+                '📩 Welcome message sent!'
+            );
+
+
+        } catch (err) {
+
+            console.log(
+                'Welcome error:',
+                err
+            );
+
+        }
+
+
+        sock.ev.on(
+            'messages.upsert',
+            async (msg) => handleMessage(sock, msg)
+        );
+
+    }
+
+});
 
 
         if (!state.creds.registered) {
