@@ -3,11 +3,13 @@ const input = document.getElementById("number")
 const button = document.getElementById("submit")
 const resultBox = document.getElementById("result")
 const codeEl = document.getElementById("code")
+const copyBtn = document.getElementById("copy")
 const statusRow = document.getElementById("statusRow")
 const statusText = document.getElementById("statusText")
 const errorEl = document.getElementById("error")
 
-const BACKEND_URL = "https://devarth-bot-backend.onrender.com"
+// Same-origin: the pairing API is served by this project's own server.js.
+const API = ""
 
 let pollTimer = null
 let currentNumber = null
@@ -15,13 +17,8 @@ let currentNumber = null
 function setLoading(loading) {
   button.disabled = loading
   button.classList.toggle("is-loading", loading)
-
   const label = button.querySelector(".btn__label")
-  if (label) {
-    label.textContent = loading
-      ? "GÉNÉRATION…"
-      : "GET CODE PAIRING"
-  }
+  if (label) label.textContent = loading ? "GÉNÉRATION…" : "GÉNÉRER LE CODE"
 }
 
 function showError(message) {
@@ -32,6 +29,13 @@ function showError(message) {
 function clearError() {
   errorEl.hidden = true
   errorEl.textContent = ""
+}
+
+// WhatsApp shows codes as XXXX-XXXX. Baileys may return them without a dash.
+function formatCode(code) {
+  const clean = String(code).replace(/[^A-Za-z0-9]/g, "")
+  if (clean.length === 8) return `${clean.slice(0, 4)}-${clean.slice(4)}`
+  return code
 }
 
 function renderStatus(status) {
@@ -58,89 +62,69 @@ function stopPolling() {
 
 async function pollStatus() {
   if (!currentNumber) return
-
   try {
-    const res = await fetch(
-      `${BACKEND_URL}/api/status`
-    )
-
+    const res = await fetch(`${API}/api/status?number=${encodeURIComponent(currentNumber)}`)
     if (!res.ok) return
-
     const data = await res.json()
-
-    if (!data.success) return
+    if (!data.ok) return
 
     renderStatus(data.status)
-
-    if (data.status === "connected") {
-      stopPolling()
-    }
+    if (data.status === "connected" || data.status === "failed") stopPolling()
   } catch {
-    // Erreur réseau temporaire : continuer le polling
+    // Erreur réseau temporaire : on continue le polling.
   }
 }
+
+copyBtn.addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(codeEl.textContent.replace("-", ""))
+    copyBtn.textContent = "Copié !"
+    setTimeout(() => (copyBtn.textContent = "Copier le code"), 1600)
+  } catch {
+    copyBtn.textContent = "Copie impossible"
+    setTimeout(() => (copyBtn.textContent = "Copier le code"), 1600)
+  }
+})
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault()
   clearError()
 
   const raw = input.value.replace(/[^0-9]/g, "")
-
   if (raw.length < 8) {
-    showError(
-      "Entre un numéro valide avec l’indicatif pays (ex: 509XXXXXXXX)."
-    )
+    showError("Entre un numéro valide avec l’indicatif pays (ex. 243812345678).")
     return
   }
 
   stopPolling()
-
   resultBox.hidden = true
   statusRow.hidden = true
-
   setLoading(true)
 
   try {
-    const res = await fetch(
-      `${BACKEND_URL}/api/pairing`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          phoneNumber: raw
-        })
-      }
-    )
+    const res = await fetch(`${API}/api/pair`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ number: raw }),
+    })
 
     const data = await res.json()
-
-    if (!res.ok || !data.success) {
-      throw new Error(
-        data.error ||
-        "Le backend n’a pas pu générer le code."
-      )
+    if (!res.ok || !data.ok) {
+      throw new Error(data.error || "Le backend n’a pas pu générer le code.")
     }
 
-    currentNumber = raw
+    currentNumber = data.number || raw
 
-    if (data.pairingCode) {
-      codeEl.textContent = data.pairingCode
+    if (data.code) {
+      codeEl.textContent = formatCode(data.code)
       resultBox.hidden = false
     }
 
-    renderStatus("connecting")
-
+    renderStatus(data.status || "connecting")
     pollTimer = setInterval(pollStatus, 3000)
-
   } catch (err) {
-    console.error(err)
-
-    showError(
-      err.message ||
-      "Erreur de connexion au backend."
-    )
+    console.error("[v0] pairing error:", err)
+    showError(err.message || "Erreur de connexion au backend.")
   } finally {
     setLoading(false)
   }

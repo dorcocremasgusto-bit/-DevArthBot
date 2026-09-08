@@ -3,35 +3,46 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0a0012" />
+    <meta name="theme-color" content="#08000f" />
     <meta
       name="description"
-      content="DevArth-Bot — Génère ton vrai code de pairing WhatsApp instantanément."
+      content="DevArth-Bot MD — Génère ton vrai code de pairing WhatsApp instantanément, propulsé par Baileys."
     />
-    <title>DevArth-Bot · Pairing WhatsApp</title>
+    <title>DevArth-Bot MD · Pairing WhatsApp</title>
+    <link rel="icon" href="/logo.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Sora:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <div class="bg-grid" aria-hidden="true"></div>
+    <div class="bg-scan" aria-hidden="true"></div>
     <div class="bg-glow bg-glow--1" aria-hidden="true"></div>
     <div class="bg-glow bg-glow--2" aria-hidden="true"></div>
+    <div class="bg-glow bg-glow--3" aria-hidden="true"></div>
 
     <main class="shell">
       <section class="card" aria-labelledby="title">
         <header class="card__head">
           <div class="brand">
-            <span class="brand__dot" aria-hidden="true"></span>
-            <span class="brand__name">DevArth-Bot</span>
+            <img class="brand__logo" src="/logo.png" alt="Logo DevArth-Bot MD" width="48" height="48" />
+            <div class="brand__meta">
+              <span class="brand__name">DevArth-Bot MD</span>
+              <span class="brand__tag">
+                <span class="brand__dot" aria-hidden="true"></span>
+                WhatsApp · Baileys
+              </span>
+            </div>
           </div>
+
           <h1 id="title" class="title">Pairing WhatsApp</h1>
           <p class="subtitle">
-            Entre ton numéro pour recevoir ton vrai code de connexion généré par WhatsApp.
+            Entre ton numéro pour recevoir un <strong>vrai code de connexion</strong> généré
+            en direct par WhatsApp, puis associe ton appareil.
           </p>
         </header>
 
@@ -51,29 +62,25 @@
                 required
               />
             </div>
-            <span id="hint" class="field__hint">Avec l’indicatif pays, sans le « + ».</span>
+            <span id="hint" class="field__hint">Avec l’indicatif pays, sans le « + » ni espaces.</span>
           </label>
 
           <button id="submit" class="btn" type="submit">
-            <span class="btn__label">GET CODE PAIRING</span>
+            <span class="btn__label">GÉNÉRER LE CODE</span>
             <span class="btn__spinner" aria-hidden="true"></span>
           </button>
         </form>
 
-        <div
-          id="result"
-          class="result"
-          hidden
-          role="status"
-          aria-live="polite"
-        >
+        <div id="result" class="result" hidden role="status" aria-live="polite">
           <span class="result__label">Ton code de pairing</span>
           <div id="code" class="result__code" aria-label="Code de pairing"></div>
-          <p class="result__how">
-            WhatsApp → <strong>Appareils connectés</strong> →
-            <strong>Associer un appareil</strong> →
-            <strong>Associer avec un numéro</strong>, puis saisis ce code.
-          </p>
+          <button id="copy" class="result__copy" type="button">Copier le code</button>
+          <ol class="result__how">
+            <li>Ouvre <strong>WhatsApp</strong> sur ton téléphone.</li>
+            <li>Va dans <strong>Appareils connectés</strong> → <strong>Associer un appareil</strong>.</li>
+            <li>Choisis <strong>Associer avec un numéro de téléphone</strong>.</li>
+            <li>Saisis le code ci-dessus.</li>
+          </ol>
         </div>
 
         <div id="statusRow" class="status" hidden aria-live="polite">
@@ -87,7 +94,8 @@
       </section>
 
       <footer class="foot">
-        <span>Sessions &amp; credentials restent côté serveur.</span>
+        <span class="foot__brand">CREATE BY KLAUS DEV (ARTHUR DEV)</span>
+        <span class="foot__note">Sessions &amp; credentials restent côté serveur.</span>
       </footer>
     </main>
 
