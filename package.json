@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "node test.js",
-    "start": "node index.js",
+    "start": "node app.js",
     "web": "node server.js",
     "dev": "node server.js"
   },
