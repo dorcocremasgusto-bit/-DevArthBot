@@ -5,8 +5,7 @@ import configmanager from '../utils/configmanager.js';
 
 const data = 'sessionData';
 
-async function connectToWhatsapp(handleMessage, customNumber = null) {
-
+async function connectToWhatsapp(handleMessage, customNumber = null, onCode = null) {
     const { version } = await fetchLatestBaileysVersion();
     console.log(version);
 
